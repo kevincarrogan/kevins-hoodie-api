@@ -11,9 +11,14 @@ from pydantic.color import Color
 app = FastAPI()
 
 
+class Hex(Color):
+    def __str__(self):
+        return self.original()
+
+
 class Day(BaseModel):
     colour: str = None
-    hex: Color = None
+    hex: Hex = None
     date: date
 
 
