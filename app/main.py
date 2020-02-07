@@ -36,6 +36,6 @@ async def days():
     return {"days": response.json()}
 
 
-@app.post("/days/", response_model=Day)
+@app.post("/days/")
 def add_day(day: Day):
     return day
