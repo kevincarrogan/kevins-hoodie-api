@@ -1,3 +1,4 @@
+import boto3
 import httpx
 import json
 
@@ -39,3 +40,14 @@ async def days():
 @app.post("/days/")
 def add_day(day: Day):
     return day
+
+
+dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
+
+
+table = dynamodb.Table("colours")
+
+
+@app.get("/colours/")
+def colours():
+    return {"colours": table.scan()["Items"]}
