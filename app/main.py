@@ -30,14 +30,12 @@ class Days(BaseModel):
     days: List[Day]
 
 
-api_key_header = APIKeyHeader(name="api-key")
+api_key_header = APIKeyHeader(name="Api-Key")
 api_key = os.environ["API_KEY"]
 
 
 @app.get("/days/", response_model=Days)
-async def days(*, api_header: str = Security(api_key_header)):
-    if api_header != api_key:
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Not authenticated")
+async def days():
     colours_url = "https://raw.githubusercontent.com/kevincarrogan/whatcolourhoodieiskevinwearingtoday.com/master/data/colours.json"
 
     async with httpx.AsyncClient() as client:
@@ -47,7 +45,10 @@ async def days(*, api_header: str = Security(api_key_header)):
 
 
 @app.post("/days/")
-def add_day(day: Day):
+def add_day(day: Day, api_header: str = Security(api_key_header)):
+    if api_header != api_key:
+        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Not authenticated")
+
     return day
 
 
