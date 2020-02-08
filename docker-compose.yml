@@ -4,6 +4,8 @@ services:
   api:
     build: .
     command: /start-reload.sh
+    environment:
+      - API_KEY=test
     ports:
       - "5000:80"
     volumes:

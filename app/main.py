@@ -1,13 +1,16 @@
 import boto3
 import httpx
 import json
+import os
 
 from datetime import date
 from typing import List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Security
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 from pydantic.color import Color
+from starlette.status import HTTP_403_FORBIDDEN
 
 app = FastAPI()
 
@@ -27,6 +30,10 @@ class Days(BaseModel):
     days: List[Day]
 
 
+api_key_header = APIKeyHeader(name="Api-Key")
+api_key = os.environ["API_KEY"]
+
+
 @app.get("/days/", response_model=Days)
 async def days():
     colours_url = "https://raw.githubusercontent.com/kevincarrogan/whatcolourhoodieiskevinwearingtoday.com/master/data/colours.json"
@@ -38,7 +45,10 @@ async def days():
 
 
 @app.post("/days/")
-def add_day(day: Day):
+def add_day(day: Day, api_header: str = Security(api_key_header)):
+    if api_header != api_key:
+        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Not authenticated")
+
     return day
 
 
