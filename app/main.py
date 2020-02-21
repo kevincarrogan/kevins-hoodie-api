@@ -14,6 +14,8 @@ from starlette.status import HTTP_403_FORBIDDEN
 
 app = FastAPI()
 
+dynamodb = boto3.resource("dynamodb")
+
 
 class Hex(Color):
     def __str__(self):
@@ -44,20 +46,22 @@ async def days():
     return {"days": response.json()}
 
 
+days_table = dynamodb.Table("days")
+
+
 @app.post("/days/")
 def add_day(day: Day, api_header: str = Security(api_key_header)):
     if api_header != api_key:
         raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Not authenticated")
 
+    days_table.put_item(Item={"hex": str(day.hex), "date": str(day.date)})
+
     return day
 
 
-dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
-
-
-table = dynamodb.Table("colours")
+colours_table = dynamodb.Table("colours")
 
 
 @app.get("/colours/")
 def colours():
-    return {"colours": table.scan()["Items"]}
+    return {"colours": colours_table.scan()["Items"]}
