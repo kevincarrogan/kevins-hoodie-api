@@ -1,6 +1,7 @@
 httpx==0.23.0
-uvicorn==0.11.7
-fastapi==0.65.2
+uvicorn==0.12.3
+fastapi==0.109.1
 boto3==1.11.13
 starlette>=0.13.5 # not directly required, pinned by Snyk to avoid a vulnerability
 websockets>=9.1 # not directly required, pinned by Snyk to avoid a vulnerability
+anyio>=4.4.0 # not directly required, pinned by Snyk to avoid a vulnerability
